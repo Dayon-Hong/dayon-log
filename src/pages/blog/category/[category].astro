@@ -1,0 +1,13 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PostArchive from '../../../components/PostArchive.astro';
+import { categories } from '../../../lib/categories';
+
+export function getStaticPaths() {
+  return categories.map((category) => ({ params: { category: category.slug }, props: { category } }));
+}
+const { category } = Astro.props;
+---
+<Base title={`${category.name} 글`} description={`dayon.log의 ${category.name} 카테고리 글 목록`}>
+  <PostArchive selectedCategory={category.slug} />
+</Base>

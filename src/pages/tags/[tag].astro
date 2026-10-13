@@ -1,0 +1,4 @@
+---
+import Base from '../../layouts/Base.astro';import PostCard from '../../components/PostCard.astro';import { posts, path } from '../../lib/blog';export async function getStaticPaths(){const all=await posts();return [...new Set(all.flatMap(p=>p.data.tags))].map(tag=>({params:{tag},props:{tag,all}}))}const {tag,all}=Astro.props;const selected=all.filter((p:any)=>p.data.tags.includes(tag));
+---
+<Base title={`#${tag}`}><div class="page-heading"><a href={path('tags')} class="back">← 태그 전체</a><h1>#{tag}</h1><p>{selected.length}개의 글</p></div><div class="post-list">{selected.map((post:any)=><PostCard post={post}/>)}</div></Base>

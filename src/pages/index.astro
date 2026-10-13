@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import PostCard from '../components/PostCard.astro';
+import { posts, path } from '../lib/blog';
+
+const all = await posts();
+---
+
+<Base title="Home">
+  <section class="hero" aria-label="dayon.log 소개">
+    <img class="hero-photo" src={path('hero-sofa-laptop.png')} alt="" aria-hidden="true" fetchpriority="high" />
+    <div class="hero-copy">
+      <h1>개발도, 삶도<br />꾸준히, 그리고 조금씩.</h1>
+      <p>문제를 발견하고 해결한 경험을 기록합니다.</p>
+    </div>
+  </section>
+
+  <section class="section-heading">
+    <h2>최근 글 <small>RECENT POSTS</small></h2>
+    <a href={path('blog')}>전체보기 →</a>
+  </section>
+  <div class="post-list">{all.slice(0, 8).map((post) => <PostCard post={post} />)}</div>
+</Base>

@@ -1,0 +1,5 @@
+---
+import { path } from '../lib/blog';
+const { post } = Astro.props;
+---
+<article class="post-card"><div class="thumb" aria-hidden="true">{post.data.category === "Database" ? "{ }" : post.data.category === "Backend" ? "⌘" : "</>"}</div><div class="post-body"><span class="category-label">{post.data.category}</span><h3><a href={path(`blog/${post.id}`)}>{post.data.title}</a></h3><p>{post.data.description}</p><div class="chips">{post.data.tags.slice(0,3).map((tag: string) => <a href={path(`tags/${encodeURIComponent(tag)}`)}>#{tag}</a>)}</div><div class="post-meta"><time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString('ko-KR')}</time></div></div></article>

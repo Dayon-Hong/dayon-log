@@ -1,0 +1,59 @@
+---
+import PostCard from './PostCard.astro';
+import { categories } from '../lib/categories';
+import { path, posts } from '../lib/blog';
+
+const { selectedCategory } = Astro.props;
+const selected = categories.find((item) => item.slug === selectedCategory);
+const all = await posts();
+const visiblePosts = selected ? all.filter((post) => post.data.category === selected.name) : all;
+---
+
+<div class="page-heading archive-heading">
+  <span class="eyebrow">{selected ? 'CATEGORY / ARCHIVE' : 'ARCHIVE'}</span>
+  <h1>{selected ? selected.name : '모든 기록'}</h1>
+  <p>{selected ? `${selected.name} 카테고리의 글을 모았습니다.` : '배우고, 적용하고, 다시 정리한 이야기들.'}</p>
+</div>
+
+<label class="search-field archive-search" for="search">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.7" cy="10.7" r="6.5"/><path d="m16 16 4.4 4.4"/></svg>
+  <span class="sr-only">게시글 검색</span>
+  <input id="search" type="search" placeholder="제목, 설명, 태그 검색" autocomplete="off" />
+</label>
+
+<div id="posts" class="post-list">
+  {visiblePosts.map((post) =>
+    <div data-search={`${post.data.title} ${post.data.description} ${post.data.tags.join(' ')} ${post.data.category}`.toLowerCase()}>
+      <PostCard post={post} />
+    </div>
+  )}
+</div>
+<div id="empty" class="search-empty" hidden={visiblePosts.length !== 0}>
+  <p>{visiblePosts.length === 0 ? '아직 이 카테고리에 게시글이 없어요.' : '일치하는 글이 없어요.'}</p>
+  {visiblePosts.length > 0 && <button type="button" id="reset-search">검색어 지우기</button>}
+  {visiblePosts.length === 0 && <a href={path('blog')}>전체 글 보기 →</a>}
+</div>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('#search');
+  const empty = document.querySelector<HTMLElement>('#empty');
+  const hasPosts = document.querySelectorAll('[data-search]').length > 0;
+
+  function filterPosts() {
+    const query = input?.value.toLocaleLowerCase().trim() ?? '';
+    let visible = 0;
+    document.querySelectorAll<HTMLElement>('[data-search]').forEach((item) => {
+      const matches = item.dataset.search?.includes(query) ?? false;
+      item.hidden = !matches;
+      if (matches) visible++;
+    });
+    if (empty) empty.hidden = visible !== 0;
+  }
+
+  if (hasPosts) input?.addEventListener('input', filterPosts);
+  document.querySelector('#reset-search')?.addEventListener('click', () => {
+    if (input) input.value = '';
+    filterPosts();
+    input?.focus();
+  });
+</script>

@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import { posts, path } from '../../lib/blog';
+
+const all = await posts();
+const tags = [...new Set(all.flatMap((post) => post.data.tags))]
+  .map((name) => ({ name, count: all.filter((post) => post.data.tags.includes(name)).length }))
+  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+---
+
+<Base title="Tags" description="dayon.log의 기술 태그 탐색">
+  <div class="page-heading tags-heading">
+    <span class="eyebrow">EXPLORE BY TOPIC</span>
+    <h1>태그로 둘러보기<span class="tag-title-mark" aria-hidden="true">✳</span></h1>
+    <p>관심 있는 기술부터 골라 읽어보세요. 하나의 글에 여러 태그가 붙을 수 있습니다.</p>
+  </div>
+
+  <section class="tag-overview" aria-label="태그 탐색 안내">
+    <div><span class="tag-overview-kicker">YOUR READING MAP</span><p>기록을 주제별로<br />천천히 탐색해 보세요.</p></div>
+    <div class="tag-overview-stats"><strong>{tags.length.toString().padStart(2, '0')}</strong><span>개의 태그</span></div>
+  </section>
+
+  <div class="tag-section-title"><h2>모든 태그</h2><span>{tags.length} TOPICS</span></div>
+  <div class="tag-grid">
+    {tags.map((tag, index) =>
+      <a class="tag-tile" href={path(`tags/${encodeURIComponent(tag.name)}`)}>
+        <div class="tag-tile-top"><span>{String(index + 1).padStart(2, '0')} / TOPIC</span><span class="tag-tile-arrow" aria-hidden="true">↗</span></div>
+        <div class="tag-tile-bottom"><h3>#{tag.name}</h3><span>{tag.count}개의 글</span></div>
+      </a>
+    )}
+  </div>
+</Base>
